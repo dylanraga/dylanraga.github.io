@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>sRGB-to-gamma LUT generator</title>
+		<link rel="stylesheet" href="style.css" />
+	</head>
+	<body>
+		<div>
+			<h1 class="title">Generate 1D LUT: sRGB ➔ Pure Power</h1>
+			<form class="form-box" id="form">
+				<div>
+					<label>SDR White</label>
+					<div><input type="number" id="whiteLevel" value="200" step='10' /> nits</div>
+				</div>
+				<div>
+					<label>Gamma Power</label>
+					<input type="number" id="gammaPower" value="2.2" step="0.1" />
+				</div>
+
+				<div>
+					<button class="submit-btn">Generate</button>
+				</div>
+			</form>
+
+			<div class="result-box">
+				<label>CODE</label>
+				<textarea id="result-txt" readonly>. . .</textarea>
+				<em>Save this result into a *.cal file, then apply it with ArgyllCMS applycal</em>
+			</div>
+		</div>
+
+		<script src="script.js" defer></script>
+	</body>
+</html>
