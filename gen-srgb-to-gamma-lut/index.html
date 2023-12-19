@@ -12,7 +12,17 @@
 			<form class="form-box" id="form">
 				<div>
 					<label>SDR White</label>
-					<div><input type="number" id="whiteLevel" value="200" step='10' /> nits</div>
+					<div class='white-field'>
+						<div>
+							<input type="number" id="whiteLevel" value="200" step='10' />
+							<small>nits</small>
+						</div>
+						<p>/</p>
+						<div>
+							<small>CBV</small>
+							<input type="number" id="cbv" value="30" step='1' />
+						</div>
+					</div>
 				</div>
 				<div>
 					<label>Gamma Power</label>
@@ -27,7 +37,7 @@
 			<div class="result-box">
 				<label>CODE</label>
 				<textarea id="result-txt" readonly>. . .</textarea>
-				<em>Paste the contents above into a *.cal file, then apply it with ArgyllCMS applycal</em>
+				<em><small>Paste the contents above into a *.cal file, then apply it with ArgyllCMS dispwin</small></em>
 			</div>
 		</div>
 

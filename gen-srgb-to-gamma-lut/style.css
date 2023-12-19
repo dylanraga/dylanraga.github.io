@@ -95,3 +95,9 @@ input:focus {
 		outline: 2px solid #212121;
 	}
 }
+
+.white-field {
+	display: flex;
+	align-items: center;
+	gap: 1em;
+}

@@ -1,5 +1,17 @@
 const resultTxt = document.getElementById('result-txt');
 
+document.getElementById('whiteLevel').addEventListener('change', (e) => {
+	document.getElementById('cbv').value = Math.round(
+		(e.currentTarget.value - 80) / 4
+	);
+});
+
+document.getElementById('cbv').addEventListener('change', (e) => {
+	document.getElementById('whiteLevel').value = Math.round(
+		80 + e.currentTarget.value * 4
+	);
+});
+
 document.getElementById('form').addEventListener('submit', (e) => {
 	e.preventDefault();
 	const whiteLevel = document.getElementById('whiteLevel').value;
