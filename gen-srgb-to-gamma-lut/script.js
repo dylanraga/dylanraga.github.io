@@ -1,5 +1,10 @@
 const resultTxt = document.getElementById('result-txt');
 
+document.getElementById('result-txt').addEventListener('click', (e) => {
+	e.currentTarget.focus();
+	e.currentTarget.select();
+});
+
 document.getElementById('whiteLevel').addEventListener('change', (e) => {
 	document.getElementById('cbv').value = Math.round(
 		(e.currentTarget.value - 80) / 4

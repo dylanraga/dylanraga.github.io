@@ -1,8 +1,13 @@
 :root,
 html,
 body {
-	background: #f7f7f7;
-	color: #212121;
+	--color-dark: oklch(18% 0.0135 78.3);
+	--color-light: oklch(98% 0.0135 78.3);
+	--color-light-1: oklch(88% 0.0135 78.3);
+
+	background: var(--color-light);
+	color: var(--color-dark);
+
 	margin: 0;
 	font-family: 'Courier New';
 	font-size: 16px;
@@ -10,6 +15,10 @@ body {
 
 body {
 	padding: 2rem;
+}
+
+::selection {
+	background: oklch(68% 0.0135 78.3);
 }
 
 .title {
@@ -47,26 +56,26 @@ input:focus {
 
 	& input {
 		width: 8ch;
-		background: #ddd;
+		background: var(--color-light-1);
 		padding: 0.3rem 0.4rem;
 
 		&:focus {
 			font-weight: 700;
-			outline: 2px solid #212121;
+			outline: 2px solid var(--color-dark);
 		}
 	}
 }
 
 .submit-btn {
 	background: none;
-	border: 1px solid #212121;
+	border: 1px solid var(--color-dark);
 	padding: 0.5rem 1rem;
 	cursor: pointer;
 
 	&:hover,
 	&:focus {
 		font-weight: 700;
-		outline: 2px solid #212121;
+		outline: 2px solid var(--color-dark);
 	}
 }
 
@@ -82,7 +91,7 @@ input:focus {
 }
 
 #result-txt {
-	background: #ddd;
+	background: var(--color-light-1);
 	/* width: 50%;
 	min-width: 80ch; */
 	height: 50ch;
@@ -90,9 +99,10 @@ input:focus {
 	font-size: 0.8rem;
 	margin: 0.2rem 0 0 0;
 	white-space: pre;
+	border: none;
 
 	&:focus {
-		outline: 2px solid #212121;
+		outline: 2px solid var(--color-dark);
 	}
 }
 
