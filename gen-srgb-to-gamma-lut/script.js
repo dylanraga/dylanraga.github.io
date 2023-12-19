@@ -33,7 +33,7 @@ BEGIN_DATA`;
 		if (i === 0) {
 			output = 0;
 		}
-		if (i >= whiteLevel) {
+		if (luminance >= whiteLevel) {
 			output = input;
 		}
 
