@@ -26,6 +26,10 @@ body {
 	margin: 0 0 1em 0;
 }
 
+p {
+	margin: 0;
+}
+
 input,
 button {
 	font-family: inherit;
@@ -110,4 +114,25 @@ input:focus {
 	display: flex;
 	align-items: center;
 	gap: 1em;
+}
+
+.method-field {
+	display: flex;
+	gap: 1em;
+	& input {
+		margin: 0;
+		padding: 0;
+		cursor: pointer;
+		outline: none !important;
+	}
+	& > div {
+		display: flex;
+	}
+	& label {
+		font-size: 0.85rem;
+		cursor: pointer;
+		&:has(+ input:checked) {
+			font-weight: bold;
+		}
+	}
 }

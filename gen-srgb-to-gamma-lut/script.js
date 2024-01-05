@@ -19,12 +19,16 @@ document.getElementById('cbv').addEventListener('change', (e) => {
 
 document.getElementById('form').addEventListener('submit', (e) => {
 	e.preventDefault();
-	const whiteLevel = document.getElementById('whiteLevel').value;
-	const gammaPower = document.getElementById('gammaPower').value;
-	resultTxt.value = genlut(whiteLevel, gammaPower);
+	const formData = new FormData(e.currentTarget);
+
+	const whiteLevel = parseFloat(formData.get('whiteLevel'));
+	const blackLevel = parseFloat(formData.get('blackLevel'));
+	const gamma = parseFloat(formData.get('gammaPower'));
+	const method = formData.get('method');
+	resultTxt.value = genlut({ whiteLevel, blackLevel, gamma, method });
 });
 
-function genlut(whiteLevel, gammaPower) {
+function genlut({ whiteLevel, blackLevel, gamma, method }) {
 	let contents = `CAL
 
 ORIGINATOR "vcgt"
@@ -41,18 +45,15 @@ BEGIN_DATA`;
 
 	for (let i = 0; i < 1024; i++) {
 		const input = i / 1023;
-		const luminance = pqEotf(input);
 
-		let output = pqInvEotf(
-			whiteLevel * srgbInvEotf(luminance / whiteLevel) ** gammaPower
-		);
+		let output = transformToGamma(input, {
+			whiteLevel,
+			blackLevel,
+			gamma,
+			method,
+		});
 
-		if (i === 0) {
-			output = 0;
-		}
-		if (luminance >= whiteLevel) {
-			output = input;
-		}
+		// console.log(output);
 
 		contents += `\n${input.toFixed(14)}\t${output.toFixed(
 			14
@@ -62,6 +63,46 @@ BEGIN_DATA`;
 	contents += '\nEND_DATA\n';
 
 	return contents;
+}
+
+function transformToGamma(input, { whiteLevel, blackLevel, gamma, method }) {
+	let output;
+	if (input === 0) return 0;
+	switch (method) {
+		case 'nvidia':
+			{
+				const luminanceOriginal = pqEotf(input);
+
+				if (luminanceOriginal < blackLevel || luminanceOriginal > whiteLevel) {
+					output = input;
+					break;
+				}
+
+				const inputSrgb = srgbInvEotf(luminanceOriginal / whiteLevel);
+				const gammaLuminance =
+					(whiteLevel - blackLevel) * inputSrgb ** gamma + blackLevel;
+
+				output = pqInvEotf(gammaLuminance);
+			}
+			break;
+		case 'amd':
+			{
+				if (blackLevel) {
+					const luminanceOriginal = whiteLevel * srgbEotf(input);
+					console.log({ blackLevel, luminanceOriginal });
+					if (luminanceOriginal < blackLevel) {
+						output = input;
+						break;
+					}
+				}
+
+				const gammaLuminance =
+					(whiteLevel - blackLevel) * input ** gamma + blackLevel;
+				output = srgbInvEotf(gammaLuminance / whiteLevel);
+			}
+			break;
+	}
+	return output;
 }
 
 const m1 = 0.1593017578125;
@@ -83,9 +124,15 @@ function pqInvEotf(L) {
 	return V;
 }
 
-function srgbInvEotf(L) {
-	const X2 = 0.00313066844250063;
-	const V = L <= X2 ? L * 12.92 : 1.055 * L ** (1 / 2.4) - 0.055;
+const X1 = 0.0404482362771082;
+const X2 = 0.00313066844250063;
 
+function srgbInvEotf(L) {
+	const V = L <= X2 ? L * 12.92 : 1.055 * L ** (1 / 2.4) - 0.055;
 	return V;
+}
+
+function srgbEotf(V) {
+	const L = V <= X1 ? V / 12.92 : ((V + 0.055) / 1.055) ** 2.4;
+	return L;
 }
