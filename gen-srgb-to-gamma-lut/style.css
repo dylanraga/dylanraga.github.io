@@ -4,9 +4,12 @@ body {
 	--color-dark: oklch(18% 0.0135 78.3);
 	--color-light: oklch(98% 0.0135 78.3);
 	--color-light-1: oklch(88% 0.0135 78.3);
+	--color-accent: oklch(60% 0.2 80);
 
 	background: var(--color-light);
 	color: var(--color-dark);
+
+	accent-color: var(--color-accent);
 
 	margin: 0;
 	font-family: 'Courier New';
@@ -43,7 +46,7 @@ input:focus {
 .form-box {
 	display: flex;
 	flex-direction: column;
-	gap: 0.5rem;
+	gap: 1rem;
 
 	& > div {
 		display: flex;
@@ -58,7 +61,7 @@ input:focus {
 		margin-top: 1em;
 	}
 
-	& input {
+	& input[type='number'] {
 		width: 8ch;
 		background: var(--color-light-1);
 		padding: 0.3rem 0.4rem;
@@ -118,20 +121,20 @@ input:focus {
 
 .method-field {
 	display: flex;
-	gap: 1em;
+	gap: 3em;
 	& input {
+		display: inline-block;
 		margin: 0;
-		padding: 0;
 		cursor: pointer;
-		outline: none !important;
 	}
 	& > div {
 		display: flex;
+		gap: 0.6em;
 	}
 	& label {
 		font-size: 0.85rem;
 		cursor: pointer;
-		&:has(+ input:checked) {
+		input:checked + & {
 			font-weight: bold;
 		}
 	}
