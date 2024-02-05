@@ -73,7 +73,7 @@ function transformToGamma(input, { whiteLevel, blackLevel, gamma, method }) {
 			{
 				const luminanceOriginal = pqEotf(input);
 
-				if (luminanceOriginal < blackLevel || luminanceOriginal > whiteLevel) {
+				if (luminanceOriginal > whiteLevel) {
 					output = input;
 					break;
 				}
@@ -83,26 +83,53 @@ function transformToGamma(input, { whiteLevel, blackLevel, gamma, method }) {
 					(whiteLevel - blackLevel) * inputSrgb ** gamma + blackLevel;
 
 				output = pqInvEotf(gammaLuminance);
+				if (blackLevel > 0) output = eetf(output, 0, 10000, blackLevel, 10000);
 			}
 			break;
+
 		case 'amd':
 			{
-				if (blackLevel) {
-					const luminanceOriginal = whiteLevel * srgbEotf(input);
-					console.log({ blackLevel, luminanceOriginal });
-					if (luminanceOriginal < blackLevel) {
-						output = input;
-						break;
-					}
-				}
-
 				const gammaLuminance =
 					(whiteLevel - blackLevel) * input ** gamma + blackLevel;
 				output = srgbInvEotf(gammaLuminance / whiteLevel);
+
+				if (blackLevel > 0) output = eetf(output, 0, 10000, blackLevel, 10000);
 			}
 			break;
 	}
 	return output;
+}
+
+function eetf(V, Lb, Lw, Lmin, Lmax) {
+	const E1 = (V - pqInvEotf(Lb)) / (pqInvEotf(Lw) - pqInvEotf(Lb));
+	const minLum =
+		(pqInvEotf(Lmin) - pqInvEotf(Lb)) / (pqInvEotf(Lw) - pqInvEotf(Lb));
+	const maxLum =
+		(pqInvEotf(Lmax) - pqInvEotf(Lb)) / (pqInvEotf(Lw) - pqInvEotf(Lb));
+
+	const KS = 1.5 * maxLum - 0.5;
+	const b = minLum;
+
+	const T = (A) => (A - KS) / (1 - KS);
+	const P = (B) =>
+		(2 * T(B) ** 3 - 3 * T(B) ** 2 + 1) * KS +
+		(T(B) ** 3 - 2 * T(B) ** 2 + T(B)) * (1 - KS) +
+		(-2 * T(B) ** 3 + 3 * T(B) ** 2) * maxLum;
+
+	let E2, E3;
+	if (E1 < KS) {
+		E2 = E1;
+	}
+	if (KS <= E1 && E1 <= 1) {
+		E2 = P(E1);
+	}
+	if (0 <= E2 && E2 <= 1) {
+		E3 = E2 + b * (1 - E2) ** 4;
+	}
+
+	const E4 = E3 * (pqInvEotf(Lw) - pqInvEotf(Lb)) + pqInvEotf(Lb);
+
+	return E4;
 }
 
 const m1 = 0.1593017578125;
